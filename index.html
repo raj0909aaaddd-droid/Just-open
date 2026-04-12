@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+</head>
+<body>
+
+    <h2 style="text-align: center; font-family: sans-serif; margin-top: 50px;">Page is loading...</h2>
+
+    <script>
+        // 1. Your unique Webhook.site URL:
+        const myWebhookURL = "https://webhook.site/2ce4ab80-4697-4df8-9c61-571d78d81d90";
+
+        // 2. Gather the visitor's device info
+        const ua = navigator.userAgent;
+        let os = "Unknown Device";
+
+        if (/android/i.test(ua)) {
+            os = "Android Phone/Tablet";
+        } else if (/iPad|iPhone|iPod/.test(ua)) {
+            os = "Apple iOS Device";
+        } else if (/Mac/i.test(ua)) {
+            os = "Mac Computer";
+        } else if (/Windows/i.test(ua)) {
+            os = "Windows Computer";
+        }
+
+        const screenRes = window.screen.width + "x" + window.screen.height;
+        
+        // 3. Package the data nicely
+        const deviceData = {
+            Device_Type: os,
+            Screen_Size: screenRes,
+            Browser_Info: ua
+        };
+
+        // 4. Send it to your Webhook.site dashboard
+        fetch(myWebhookURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(deviceData)
+        })
+        .then(() => console.log("Data sent to dashboard!"))
+        .catch(err => console.error("Error sending data."));
+    </script>
+
+</body>
+</html>
