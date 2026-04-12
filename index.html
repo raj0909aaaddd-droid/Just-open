@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+</head>
+<body>
+
+    <h2 style="text-align: center; font-family: sans-serif; margin-top: 50px;">Page is loading...</h2>
+
+    <script>
+        // 1. Your exact topic name (no spaces)
+        const mySecretTopic = "wukong_alert_0909";
+
+        // 2. Gather the visitor's device info
+        const ua = navigator.userAgent;
+        let os = "Unknown Device";
+
+        if (/android/i.test(ua)) {
+            os = "Android";
+        } else if (/iPad|iPhone|iPod/.test(ua)) {
+            os = "iOS (iPhone/iPad)";
+        } else if (/Mac/i.test(ua)) {
+            os = "Mac Computer";
+        } else if (/Windows/i.test(ua)) {
+            os = "Windows Computer";
+        }
+
+        const screenRes = window.screen.width + "x" + window.screen.height;
+        
+        // 3. Create the message you want to receive
+        const alertMessage = `Device: ${os}\nScreen: ${screenRes}`;
+
+        // 4. Send the push notification instantly via ntfy
+        fetch(`https://ntfy.sh/${mySecretTopic}`, {
+            method: "POST",
+            body: alertMessage,
+            headers: {
+                "Title": "🚨 New Website Visitor!"
+            }
+        })
+        .then(() => console.log("Notification sent!"))
+        .catch(err => console.error("Error sending notification."));
+    </script>
+
+</body>
+</html>
