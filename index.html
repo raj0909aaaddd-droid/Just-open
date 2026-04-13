@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Romisa's 10-Minute Adventure 🌊🤖</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { overflow: hidden; background: #000; color: white; font-family: 'Georgia', serif; height: 100vh; width: 100vw; perspective: 1200px; }
+  
+  /* 🌊 ULTRA-REALISTIC WATER */
+  #water-bg { position: fixed; inset: 0; z-index: -3; background: linear-gradient(180deg, #001233 0%, #005f73 50%, #0a9396 100%); filter: url(#water-filter); opacity: 0.95; transform: scale(1.1); }
+  .water-overlay { position: fixed; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.1) 0%, #000 100%); z-index: -2; }
+  
+  /* 🎬 GLOBAL SCREENS */
+  .screen { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; z-index: 10; opacity: 0; }
+  .ui-box { background: rgba(0, 15, 30, 0.8); padding: 30px; border-radius: 25px; text-align: center; border: 2px solid rgba(10, 147, 150, 0.6); backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.8); width: 90%; max-width: 400px; }
+  .btn { padding: 15px 25px; font-size: 18px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; margin: 10px; transition: all 0.2s; }
+  .btn-primary { background: linear-gradient(135deg, #ff4d6d, #c9184a); color: white; box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5); }
+  .btn-primary:active { transform: scale(0.95); }
+  .btn-dark { background: #333; color: #aaa; border: 1px solid #555; }
+     </style>
+     <style>
+  /* 🤖 TRUE 3D ROBOT ENGINE */
+  .bot-3d-container { width: 100px; height: 150px; position: absolute; transform-style: preserve-3d; z-index: 50; display: flex; flex-direction: column; align-items: center; }
+  .cube { position: relative; transform-style: preserve-3d; }
+  .face { position: absolute; border: 2px solid rgba(255,255,255,0.3); box-shadow: inset 0 0 15px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; font-size: 20px; }
+  
+  /* Head dimensions (60x60x60) */
+  .head-cube { width: 60px; height: 60px; transform-origin: center center -30px; }
+  .head-cube .face { width: 60px; height: 60px; }
+  .head-cube .front  { transform: translateZ(30px); background: #e0e0e0; }
+  .head-cube .back   { transform: rotateY(180deg) translateZ(30px); background: #999; }
+  .head-cube .right  { transform: rotateY(90deg) translateZ(30px); background: #ccc; }
+  .head-cube .left   { transform: rotateY(-90deg) translateZ(30px); background: #ccc; }
+  .head-cube .top    { transform: rotateX(90deg) translateZ(30px); background: #fff; }
+  .head-cube .bottom { transform: rotateX(-90deg) translateZ(30px); background: #666; }
+
+  /* Body dimensions (80x70x50) */
+  .body-cube { width: 80px; height: 70px; margin-top: 5px; }
+  .body-cube .face { position: absolute; }
+  .body-cube .front  { width: 80px; height: 70px; transform: translateZ(25px); background: linear-gradient(to bottom, #ccc, #777); }
+  .body-cube .back   { width: 80px; height: 70px; transform: rotateY(180deg) translateZ(25px); background: #555; }
+  .body-cube .right  { width: 50px; height: 70px; transform: rotateY(90deg) translateZ(55px); background: #888; left: 15px;}
+  .body-cube .left   { width: 50px; height: 70px; transform: rotateY(-90deg) translateZ(25px); background: #888; left: 15px;}
+  .body-cube .top    { width: 80px; height: 50px; transform: rotateX(90deg) translateZ(25px); background: #aaa; top: 10px;}
+  .body-cube .bottom { width: 80px; height: 50px; transform: rotateX(-90deg) translateZ(45px); background: #444; top: 10px;}
+
+  .led-face { background: #000 !important; color: #0a9396; text-shadow: 0 0 10px #0a9396; border: 2px solid #333; }
+  
+  .speech-bubble { position: absolute; top: -70px; background: #fff; color: #111; padding: 12px 18px; border-radius: 15px; font-size: 16px; font-weight: bold; white-space: nowrap; opacity: 0; box-shadow: 0 8px 20px rgba(0,0,0,0.5); z-index: 100; transform: translateZ(60px); }
+  .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+     </style>
+     <style>
+  /* 🔐 PASSWORD VAULT */
+  #security-input { width: 80%; padding: 15px; font-size: 20px; text-align: center; border-radius: 10px; border: 2px solid #0a9396; background: #000; color: #0a9396; margin: 20px 0; outline: none; letter-spacing: 5px; text-transform: uppercase; }
+  
+  /* 🎬 NETFLIX INTRO */
+  #intro { position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center; background: #000; }
+  .nf-letter { font-size: 15vw; font-weight: 900; font-family: 'Arial Black', sans-serif; color: #e50914; opacity: 0; transform: scale(2.5); filter: blur(12px); text-shadow: 0 0 40px rgba(229,9,20,0.9); }
+
+  /* 🦘 TRAMPOLINE & SNAKE */
+  #snake-canvas { background: #010a15; border-radius: 12px; margin-top: 15px; box-shadow: inset 0 0 20px rgba(0, 119, 182, 0.8); touch-action: none; }
+  #tramp-area { width: 100%; height: 300px; position: relative; overflow: hidden; background: rgba(0,0,0,0.5); border-radius: 15px; border: 2px dashed #0a9396; margin-top:15px; }
+  #paddle { width: 100px; height: 20px; background: #ff4d6d; border-radius: 10px; position: absolute; bottom: 10px; left: 100px; box-shadow: 0 0 15px #ff4d6d; }
+  #falling-bot { width: 40px; height: 40px; position: absolute; top: 0; left: 130px; font-size: 30px; }
+
+  /* 📸 POLAROID GALLERY */
+  .polaroid-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; perspective: 1000px; }
+  .polaroid { width: 120px; height: 140px; background: #fff; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transform: rotateY(180deg); transform-style: preserve-3d; transition: 0.8s; cursor: pointer; }
+  .polaroid.revealed { transform: rotateY(0deg); }
+  .p-front, .p-back { position: absolute; inset: 0; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 10px; text-align: center; }
+  .p-front { background: #fff; color: #111; font-family: 'Courier New', monospace; font-weight: bold; border: 1px solid #ccc; font-size: 14px;}
+  .p-back { background: #ff4d6d; color: #fff; font-size: 30px; border: 2px dashed #fff; }
+
+  /* 📖 3D DIARY & 🎆 FIREWORKS */
+  .book-container { perspective: 2500px; }
+  .book { width: 320px; height: 450px; position: relative; transform-style: preserve-3d; transform: rotateX(15deg) rotateY(-5deg); box-shadow: 25px 25px 50px rgba(0,0,0,0.9); }
+  .page { position: absolute; width: 100%; height: 100%; top: 0; right: 0; background: url('https://www.transparenttextures.com/patterns/paper-fibers.png'), #fffcf2; transform-origin: left; transition: transform 1.4s cubic-bezier(0.645, 0.045, 0.355, 1); border-radius: 5px 15px 15px 5px; padding: 40px 30px; font-size: 20px; color: #2c1e1e; font-style: italic; box-shadow: inset 8px 0 20px rgba(0,0,0,0.15); border: 1px solid #d4d4d4; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .page.flipped { transform: rotateY(-180deg); }
+  .cover { background: url('https://www.transparenttextures.com/patterns/leather.png'), linear-gradient(135deg, #4a001f, #800040); color: #fcc419; font-weight: 900; font-size: 32px; border-left: 18px solid #2a0012; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+
+  #finale-stage { width: 100vw; height: 100vh; position: relative; perspective: 1500px; overflow: hidden; transform-style: preserve-3d; }
+  #love-text { position: absolute; right: -250vw; top: 30%; font-size: 22vw; font-weight: 900; color: #ff4d6d; text-shadow: 0 10px 40px rgba(255, 77, 109, 1); white-space: nowrap; transform: translateZ(-200px); }
+  #fireworks-canvas { position: absolute; inset: 0; z-index: 9999; pointer-events: none; display: none; }
+</style>
+</head>
+<body>
+<svg style="display:none;"><filter id="water-filter"><feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="3" result="noise" id="turb"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<div id="water-bg"></div><div class="water-overlay"></div>
+<audio id="bg-music" src="love.mp3" loop></audio>
+
+<div id="screen-password" class="screen" style="display:flex; opacity:1;">
+  <div class="ui-box">
+    <h2 style="color:#0a9396; font-family:monospace;">SYSTEM LOCKED</h2>
+    <p style="color:#aaa; font-size:14px; margin-top:10px;">Enter Authorization Code</p>
+    <input type="text" id="security-input" placeholder="******" autocomplete="off">
+    <br><button class="btn btn-primary" onclick="checkPassword()">UNLOCK</button>
+    <p id="pass-error" style="color:red; margin-top:10px; display:none; font-weight:bold;">ACCESS DENIED 🚨</p>
+  </div>
+</div>
+
+<div id="intro" style="display:none;"><div class="nf-letter">R</div><div class="nf-letter">O</div><div class="nf-letter">M</div><div class="nf-letter">I</div><div class="nf-letter">S</div><div class="nf-letter">A</div></div>
+
+<div id="screen-snake" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#0a9396;">Feed the Love! ❤️</h2><p style="color:#aaa; font-size:14px;">Swipe to eat 5 hearts</p>
+    <canvas id="snake-canvas" width="300" height="300"></canvas>
+  </div>
+</div>
+
+<div id="screen-tramp" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#ff4d6d;">Catch Clumsy Bot! 😱</h2><p style="color:#aaa; font-size:14px;">Drag the paddle. Don't drop him!</p>
+    <h3 id="bounce-score" style="margin-top:10px;">Bounces: 0/10</h3>
+    <div id="tramp-area"><div id="falling-bot">🤖</div><div id="paddle"></div></div>
+  </div>
+</div>
+<div id="screen-lie" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#e9d8a6;">🕵️‍♂️ The Lie Detector</h2>
+    <div style="font-size: 50px; margin: 15px 0;" id="lie-bots">🤖 🤖</div>
+    <h3 id="lie-question" style="margin-bottom: 20px;">Who is the real boss of the relationship?</h3>
+    <button class="btn btn-primary" onclick="lieAnswer('Raj')">Raj 😎</button>
+    <button class="btn btn-primary" onclick="lieAnswer('Romisa')">Romisa 👑</button>
+  </div>
+</div>
+
+<div id="screen-glitch" class="screen">
+  <div class="ui-box">
+    <h2 style="color:red;">CONNECTION LOST</h2>
+    <div style="border:8px solid rgba(255,255,255,0.1); border-top:8px solid #ff4d6d; border-radius:50%; width:60px; height:60px; animation:spin 1s linear infinite; margin:20px auto;"></div>
+    <div style="position:relative; height:100px; width:100%; overflow:hidden;">
+      <div id="glitch-clumsy" style="position:absolute; left:-100px; font-size:40px;">🤖🔨📶</div>
+      <div id="glitch-main" style="position:absolute; left:-150px; font-size:40px;">🤖😡</div>
+    </div>
+    <p id="glitch-text" style="color:#aaa;">Buffering...</p>
+  </div>
+</div>
+
+<div id="screen-gallery" class="screen">
+  <div class="ui-box" style="background:transparent; border:none; box-shadow:none;">
+    <h2 style="color:#fcc419; margin-bottom:20px; text-shadow:0 5px 15px rgba(0,0,0,0.8);">Unlock the Memories 📸</h2>
+    <div class="polaroid-container" id="gallery-grid"></div>
+  </div>
+</div>
+
+<div id="screen-diary" class="screen">
+  <div class="book-container"><div class="book" id="diary-book"></div></div>
+</div>
+<div id="screen-finale" class="screen">
+  <div id="finale-stage">
+    <div id="love-text">I LOVE YOU ROMISA ❤️</div>
+    
+    <div class="bot-3d-container" id="main-bot" style="right: -300px; top: 40%;">
+      <div class="speech-bubble" id="bubble-main"></div>
+      <div class="cube head-cube" id="head-main-box">
+        <div class="face front led-face" id="face-main">^_^</div>
+        <div class="face back"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div>
+      </div>
+      <div class="cube body-cube">
+        <div class="face front"></div><div class="face back"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div>
+      </div>
+    </div>
+    
+    <div class="bot-3d-container" id="clumsy-bot" style="left: 45%; top: -300px;">
+      <div class="speech-bubble" id="bubble-clumsy"></div>
+      <div class="cube head-cube" id="head-clumsy-box">
+        <div class="face front led-face" id="face-clumsy" style="color:#ffb703; text-shadow:0 0 10px #ffb703;">x_x</div>
+        <div class="face back"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div>
+      </div>
+      <div class="cube body-cube">
+        <div class="face front" style="background:linear-gradient(to bottom, #fca311, #e85d04);"></div>
+        <div class="face back" style="background:#dc2f02;"></div><div class="face right"></div><div class="face left"></div><div class="face top"></div><div class="face bottom"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="fireworks-canvas"></canvas>
+<div id="post-credits" style="display:none; position:fixed; inset:0; z-index:10000; align-items:center; justify-content:center; flex-direction:column; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);">
+    <h1 style="color:#fcc419; font-size:40px; text-align:center; text-shadow:0 0 20px #fcc419;">Director, Producer & Lead Developer</h1>
+    <h2 style="color:#ff4d6d; font-size:60px; margin-top:20px;">RAJ 😎</h2>
+</div>
+</body>
+<script>
+// 🌊 WATER & SYSTEM
+let turb = document.getElementById('turb'), freq = 0.01;
+setInterval(() => { freq += 0.0004; turb.setAttribute('baseFrequency', `0.01 ${0.02 + Math.sin(freq)*0.015}`); }, 40);
+function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); const screen = document.getElementById(id); screen.style.display = 'flex'; gsap.to(screen, {opacity: 1, duration: 1}); }
+
+// 🔐 PASSWORD
+function checkPassword() {
+  const val = document.getElementById('security-input').value.toLowerCase();
+  if(val === 'romisa') {
+    document.getElementById('bg-music').play().catch(()=>{});
+    gsap.to('#screen-password', {opacity:0, duration:0.5, onComplete: () => {
+      document.getElementById('screen-password').style.display='none';
+      document.getElementById('intro').style.display='flex';
+      gsap.to('.nf-letter', {opacity:1, scale:1, filter:"blur(0px)", duration:1.5, stagger:0.2, ease:"power4.out"});
+      gsap.to('#intro', {opacity:0, duration:1.5, delay:4.5, onComplete: () => { document.getElementById('intro').style.display='none'; showScreen('screen-snake'); initSnake(); }});
+    }});
+  } else { document.getElementById('pass-error').style.display='block'; gsap.fromTo('#screen-password .ui-box', {x:-10}, {x:10, duration:0.1, yoyo:true, repeat:3}); }
+}
+
+// 🐍 SNAKE
+let sCanvas = document.getElementById('snake-canvas'), sCtx = sCanvas.getContext('2d');
+let snake = [{x:150, y:150}], food = {x:105, y:105}, dx = 15, dy = 0, sScore = 0, sLoop;
+function drawSnake() {
+  sCtx.clearRect(0,0,300,300); sCtx.fillStyle = '#ff4d6d'; sCtx.font = "22px Arial"; sCtx.fillText("❤️", food.x-11, food.y+11);
+  snake.forEach((p, i) => { sCtx.fillStyle = i===0 ? '#0a9396' : '#005f73'; sCtx.beginPath(); sCtx.arc(p.x, p.y, 8, 0, Math.PI*2); sCtx.fill(); });
+  let head = {x: snake[0].x+dx, y: snake[0].y+dy};
+  if(head.x<0) head.x=300; if(head.x>300) head.x=0; if(head.y<0) head.y=300; if(head.y>300) head.y=0;
+  snake.unshift(head);
+  if(Math.abs(head.x-food.x)<20 && Math.abs(head.y-food.y)<20) { sScore++; food = {x: Math.floor(Math.random()*16)*15+30, y: Math.floor(Math.random()*16)*15+30};
+    if(sScore >= 5) { clearInterval(sLoop); gsap.to('#screen-snake', {opacity:0, duration:0.5, onComplete: () => { showScreen('screen-tramp'); initTramp(); }}); }
+  } else snake.pop();
+}
+function initSnake() { sLoop = setInterval(drawSnake, 120); }
+let tx, ty; sCanvas.addEventListener('touchstart', e => { e.preventDefault(); tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:false});
+sCanvas.addEventListener('touchmove', e => { e.preventDefault(); if(!tx||!ty) return; let dxT = tx - e.touches[0].clientX, dyT = ty - e.touches[0].clientY;
+  if(Math.abs(dxT)>Math.abs(dyT)){ if(dxT>0&&dx===0){dx=-15;dy=0;}else if(dxT<0&&dx===0){dx=15;dy=0;} }else{ if(dyT>0&&dy===0){dx=0;dy=-15;}else if(dyT<0&&dy===0){dx=0;dy=15;} } tx=null; ty=null; }, {passive:false});
+  // 🦘 TRAMPOLINE
+let tBot = document.getElementById('falling-bot'), paddle = document.getElementById('paddle'), trampArea = document.getElementById('tramp-area');
+let bx = 130, by = 0, bdx = 4, bdy = 5, tScore = 0, tLoop, padX = 100;
+function moveTramp() {
+  bx += bdx; by += bdy;
+  if(bx <= 0 || bx >= trampArea.offsetWidth - 40) bdx *= -1; // Wall bounce
+  if(by <= 0) { by = 0; bdy = Math.abs(bdy); } // Ceiling bounce
+  if(by >= 250 && by <= 270 && bx + 40 >= padX && bx <= padX + 100) { bdy = -(Math.abs(bdy) + 0.5); tScore++; document.getElementById('bounce-score').innerText = "Bounces: " + tScore + "/10"; }
+  if(by > 300) { alert("SPLAT! 💥 Clumsy bot fell! Try again."); by = 0; bdy = 5; tScore = 0; document.getElementById('bounce-score').innerText = "Bounces: 0/10"; }
+  if(tScore >= 10) { clearInterval(tLoop); gsap.to('#screen-tramp', {opacity:0, duration:0.5, onComplete: () => { showScreen('screen-lie'); }}); }
+  tBot.style.left = bx + 'px'; tBot.style.top = by + 'px';
+}
+function initTramp() { tLoop = setInterval(moveTramp, 20); }
+trampArea.addEventListener('touchmove', e => { e.preventDefault(); let rect = trampArea.getBoundingClientRect(); padX = e.touches[0].clientX - rect.left - 50; if(padX<0) padX=0; if(padX>trampArea.offsetWidth-100) padX=trampArea.offsetWidth-100; paddle.style.left = padX + 'px'; }, {passive:false});
+
+// 🕵️‍♂️ LIE DETECTOR
+let lieStage = 0;
+function lieAnswer(ans) {
+  let bots = document.getElementById('lie-bots'), q = document.getElementById('lie-question');
+  if(lieStage === 0) {
+    if(ans === 'Raj') { bots.innerText = "🤣 🤣"; q.innerText = "LIES! Clumsy bot is laughing on the floor!"; setTimeout(()=>{ bots.innerText="🤖 🤖"; q.innerText="Okay, try again. Who is the real boss?";}, 2500); } 
+    else { bots.innerText = "🫡 🫡"; q.innerText = "TRUTH! The bots salute you, Queen Romisa!"; setTimeout(()=>{ lieStage=1; q.innerText="Who loves who more?"; }, 2500); }
+  } else {
+    if(ans === 'Romisa') { bots.innerText = "🚨 🚨"; q.innerText = "BEEP BEEP! ERROR! Raj loves you WAY more!"; setTimeout(()=>{ q.innerText="Try again! Who loves who more?";}, 2500); }
+    else { bots.innerText = "❤️ ❤️"; q.innerText = "100% TRUTH! Raj's love is infinite."; setTimeout(()=>{ gsap.to('#screen-lie', {opacity:0, duration:0.5, onComplete: initGlitch}); }, 2000); }
+  }
+  }
+  // 📶 WIFI GLITCH SKIT
+function initGlitch() {
+  showScreen('screen-glitch');
+  setTimeout(() => { document.getElementById('glitch-text').innerText = "Wait, Clumsy Bot... what are you doing?"; gsap.to('#glitch-clumsy', {left: '40%', duration: 2}); }, 2000);
+  setTimeout(() => { document.getElementById('glitch-text').innerText = "HE BROKE THE ROUTER!"; gsap.to('#glitch-clumsy', {y: -20, yoyo: true, repeat: 3, duration: 0.2}); }, 4500);
+  setTimeout(() => { document.getElementById('glitch-text').innerText = "Main Bot to the rescue!"; gsap.to('#glitch-main', {left: '50%', duration: 0.5}); }, 6000);
+  setTimeout(() => { document.getElementById('glitch-text').innerText = "Get back here!"; gsap.to('#glitch-clumsy', {left: '120%', duration: 1}); gsap.to('#glitch-main', {left: '120%', duration: 1, delay: 0.2}); }, 7500);
+  setTimeout(() => { gsap.to('#screen-glitch', {opacity:0, duration:0.5, onComplete: initGallery}); }, 9000);
+}
+
+// 📸 POLAROID GALLERY
+let cardsFlipped = 0;
+function initGallery() {
+  showScreen('screen-gallery');
+  const grid = document.getElementById('gallery-grid');
+  const messages = ["You are my star ⭐", "My favorite hello 💖", "My hardest goodbye 🥺", "Always yours 🌹", "My Queen 👑", "Love you! ❤️"];
+  messages.forEach(msg => {
+    let p = document.createElement('div'); p.className = 'polaroid';
+    p.innerHTML = `<div class="p-back">Tap</div><div class="p-front">${msg}</div>`;
+    p.onclick = () => { if(!p.classList.contains('revealed')) { p.classList.add('revealed'); cardsFlipped++; if(cardsFlipped === 6) setTimeout(() => { gsap.to('#screen-gallery', {opacity:0, duration:1, onComplete: startDiary}); }, 1500); } };
+    grid.appendChild(p);
+  });
+}
+
+// 📖 3D DIARY
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playPaperSound() { if(audioCtx.state === 'suspended') audioCtx.resume(); const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate); const data = buf.getChannelData(0); for(let i=0; i<data.length; i++) data[i] = (Math.random()*2-1) * Math.sin(Math.PI * i / data.length) * 0.15; const src = audioCtx.createBufferSource(); src.buffer = buf; const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 800; src.connect(filter); filter.connect(audioCtx.destination); src.start(); }
+
+function startDiary() {
+  showScreen('screen-diary'); const book = document.getElementById('diary-book');
+  const pages = ["You survived the bots! 🤖", "But seriously, Romisa... 🌅", "My life is better with you in it. 🌍", "Distance is hard, but you are worth it. ⏳", "Every moment is a gift. ✨", "You are my dream. 🌙", "Turn the last page... 📖", "For the grand finale! 🎁"];
+  pages.forEach((text, i) => { let page = document.createElement('div'); page.className = 'page'; page.style.zIndex = 10 - i; page.innerHTML = `<p>${text}</p>`;
+    page.onclick = (e) => { e.stopPropagation(); page.classList.add('flipped'); playPaperSound(); if(i === 7) setTimeout(() => { gsap.to('#screen-diary', {opacity: 0, duration: 1, onComplete: start3DFinale}); }, 1500); }; book.appendChild(page); });
+  let cover = document.createElement('div'); cover.className = 'page cover'; cover.style.zIndex = 20; cover.innerHTML = "Romisa's<br>Diary ⚜";
+  cover.onclick = () => { cover.classList.add('flipped'); playPaperSound(); }; book.appendChild(cover);
+  }
+  // 🎬 TRUE 3D COMEDY FINALE & FIREWORKS
+function setFace(id, face, color) { document.getElementById(`face-${id}`).textContent = face; if(color) { document.getElementById(`face-${id}`).style.color = color; document.getElementById(`face-${id}`).style.textShadow = `0 0 15px ${color}`; } }
+function setSpeech(id, text) { const b = document.getElementById(`bubble-${id}`); b.innerText = text; gsap.to(b, {opacity: text ? 1 : 0, duration: 0.3}); }
+
+function start3DFinale() {
+  showScreen('screen-finale');
+  const tl = gsap.timeline();
+  
+  // 1. MASSIVE TEXT
+  tl.to('#love-text', {right: '0vw', duration: 5, ease: "power2.out"})
+    
+  // 2. Main 3D Bot walks in (Rotating slightly in 3D space)
+    .to('#main-bot', {right: '35%', rotateY: -15, duration: 2.5, ease: "power2.out"}, "-=4")
+    
+  // 3. Clumsy 3D Bot FALLS!
+    .to('#clumsy-bot', {top: '40%', rotateX: 360, rotateY: 15, duration: 1, ease: "bounce.out"}, "+=1")
+    .add(() => setFace('clumsy', 'X_X'))
+    .add(() => setSpeech('clumsy', "Sorry Romisa I fall accident 🤕"))
+    
+  // 4. Main Bot gets angry (LED turns Red, head shakes)
+    .add(() => { setFace('main', '>_<', '#ff0000'); setSpeech('main', "Stupid come here! 😡"); }, "+=2.5")
+    .to('#head-main-box', {rotateY: 20, duration: 0.1, yoyo: true, repeat: 5})
+    
+  // 5. THE SLAP! (3D Rotations)
+    .to('#main-bot', {right: '43%', rotateY: 0, duration: 0.4, ease: "power2.in"}, "+=1")
+    .to('#main-bot', {rotateZ: -25, rotateY: -30, duration: 0.1, yoyo: true, repeat: 1})
+    .to('#clumsy-bot', {x: -40, rotateZ: -20, rotateY: 45, duration: 0.1, yoyo: true, repeat: 1}, "<")
+    
+  // 6. Punishment
+    .add(() => setSpeech('main', "Go the corner and sit! 👉"))
+    
+  // 7. Clumsy walks away in shame
+    .add(() => setSpeech('clumsy', ''))
+    .to('#clumsy-bot', {left: '5%', top: '75%', rotateY: 180, duration: 2, ease: "power1.inOut"}, "+=1.5")
+    .to('#clumsy-bot', {scaleY: 0.5, transformOrigin: "bottom center", duration: 0.5})
+    
+  // 8. Main Bot apologizes
+    .to('#main-bot', {rotateZ: 0, rotateY: 0, right: '50%', x: '50%', duration: 1.5, ease: "power2.out"})
+    .add(() => setSpeech('main', ''))
+    .add(() => { setFace('main', '^_^', '#0a9396'); setSpeech('main', "Romisa, sorry for my friend 😅❤️"); }, "+=0.5")
+    
+  // 9. SECRET FIREWORKS TRIGGER
+    .add(() => {
+        const heart = document.createElement('div'); heart.innerHTML = '❤️'; heart.style.position = 'absolute'; heart.style.bottom = '20px'; heart.style.right = '20px'; heart.style.fontSize = '30px'; heart.style.cursor = 'pointer'; heart.style.zIndex = '1000'; heart.style.animation = 'pulse 1s infinite';
+        document.getElementById('finale-stage').appendChild(heart);
+        heart.onclick = () => { heart.remove(); startFireworks(); };
+    }, "+=2");
+}
+
+// 🎆 FIREWORKS ENGINE
+function startFireworks() {
+  document.getElementById('post-credits').style.display = 'flex';
+  const c = document.getElementById('fireworks-canvas'); c.style.display = 'block';
+  const ctx = c.getContext('2d'); c.width = window.innerWidth; c.height = window.innerHeight;
+  let particles = [];
+  function createExplosion(x, y) { for(let i=0; i<100; i++) particles.push({x:x, y:y, vx:(Math.random()-0.5)*15, vy:(Math.random()-0.5)*15, alpha:1, color:`hsl(${Math.random()*360},100%,50%)`}); }
+  setInterval(() => createExplosion(Math.random()*c.width, Math.random()*(c.height/2)), 800);
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,c.width,c.height);
+    particles.forEach((p, i) => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.2; p.alpha-=0.01; ctx.fillStyle=p.color; ctx.globalAlpha=p.alpha; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill(); if(p.alpha<=0) particles.splice(i, 1); });
+    ctx.globalAlpha = 1; requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+</body>
+</html>
