@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Romisa's World 🌊</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { overflow: hidden; background: #000; color: white; font-family: 'Georgia', serif; height: 100vh; width: 100vw; }
+  
+  /* 🌊 ULTRA-REALISTIC WATER */
+  #water-bg { position: fixed; inset: 0; z-index: -2; background: linear-gradient(180deg, #002b5e 0%, #0077b6 50%, #00b4d8 100%); filter: url(#water-filter); opacity: 0.85; transform: scale(1.1); }
+  .water-overlay { position: fixed; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.1) 0%, #000 100%); z-index: -1; }
+  
+  /* 🎬 NETFLIX INTRO */
+  #intro { position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center; background: #000; }
+  .nf-letter { font-size: 14vw; font-weight: 900; font-family: 'Arial Black', sans-serif; color: #e50914; opacity: 0; transform: scale(2.5); filter: blur(12px); text-shadow: 0 0 30px rgba(229,9,20,0.8); }
+
+  /* 📱 GENERAL SCREENS */
+  .screen { display: none; position: absolute; inset: 0; flex-direction: column; align-items: center; justify-content: center; z-index: 10; opacity: 0; }
+  </style>
+  <style>
+  /* 🐍 SNAKE GAME UI */
+  #game-ui { text-align: center; background: rgba(0, 18, 36, 0.7); padding: 25px; border-radius: 20px; border: 2px solid rgba(0, 180, 216, 0.5); backdrop-filter: blur(12px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+  #snake-canvas { background: #010a15; border-radius: 12px; margin-top: 15px; box-shadow: inset 0 0 20px rgba(0, 119, 182, 0.8); touch-action: none; }
+  
+  /* ❓ QUESTIONS & BOTS */
+  #q-box { background: rgba(20, 0, 10, 0.75); padding: 35px 25px; border-radius: 25px; text-align: center; border: 2px solid rgba(255, 77, 109, 0.6); backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.6); width: 90%; max-width: 400px; }
+  .btn { padding: 16px 32px; font-size: 18px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; margin: 10px; transition: all 0.2s ease; }
+  #btn-yes { background: linear-gradient(135deg, #ff4d6d, #c9184a); color: white; box-shadow: 0 5px 20px rgba(255, 77, 109, 0.5); }
+  #btn-yes:active { transform: scale(0.95); }
+  #btn-no { background: #333; color: #aaa; position: relative; border: 1px solid #555; }
+  
+  /* 🤖 QUIZ BOTS */
+  .bots-area { display: flex; gap: 30px; justify-content: center; margin-bottom: 25px; }
+  .q-bot { width: 70px; height: 70px; background: linear-gradient(135deg, #0077b6, #023e8a); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; border: 3px solid rgba(255,255,255,0.8); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+  </style>
+  <style>
+  /* 📖 3D DIARY */
+  .book-container { perspective: 2500px; }
+  .book { width: 320px; height: 450px; position: relative; transform-style: preserve-3d; transform: rotateX(15deg) rotateY(-5deg); box-shadow: 25px 25px 50px rgba(0,0,0,0.9); }
+  .page { position: absolute; width: 100%; height: 100%; top: 0; right: 0; background: url('https://www.transparenttextures.com/patterns/paper-fibers.png'), #fffcf2; transform-origin: left; transition: transform 1.4s cubic-bezier(0.645, 0.045, 0.355, 1); border-radius: 5px 15px 15px 5px; padding: 40px 30px; font-size: 20px; color: #2c1e1e; font-style: italic; box-shadow: inset 8px 0 20px rgba(0,0,0,0.15); border: 1px solid #d4d4d4; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+  .page.flipped { transform: rotateY(-180deg); }
+  .cover { background: url('https://www.transparenttextures.com/patterns/leather.png'), linear-gradient(135deg, #4a001f, #800040); color: #fcc419; font-weight: 900; font-size: 32px; border-left: 18px solid #2a0012; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+
+  /* 🎬 FINALE SCENE */
+  #finale-stage { width: 100vw; height: 100vh; position: relative; perspective: 1200px; }
+  #love-text { position: absolute; right: -800px; top: 35%; font-size: 45px; font-weight: 900; color: #ff4d6d; text-shadow: 0 10px 30px rgba(255, 77, 109, 0.8); white-space: nowrap; transform: translateZ(100px); letter-spacing: 2px; }
+  
+  /* 🤖 SCENE BOTS */
+  .scene-bot { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 50; }
+  .bot-head { width: 70px; height: 55px; background: #e0e0e0; border-radius: 12px; border: 4px solid #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; color: #222; box-shadow: 0 15px 25px rgba(0,0,0,0.6); z-index: 2; transition: background 0.3s; }
+  .bot-body { width: 60px; height: 45px; background: linear-gradient(to bottom, #ccc, #999); border-radius: 10px; margin-top: -5px; z-index: 1; border: 2px solid #fff; }
+  
+  .speech-bubble { position: absolute; top: -75px; background: #fff; color: #111; padding: 12px 18px; border-radius: 15px; font-size: 15px; font-weight: bold; white-space: nowrap; opacity: 0; box-shadow: 0 8px 20px rgba(0,0,0,0.5); z-index: 10; font-family: Arial, sans-serif; }
+  .speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+</style>
+</head>
+<body>
+<svg style="display:none;">
+  <filter id="water-filter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="3" result="noise" id="turb"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<div id="water-bg"></div><div class="water-overlay"></div>
+<audio id="bg-music" src="love.mp3" loop></audio>
+
+<div id="intro">
+  <div class="nf-letter">R</div><div class="nf-letter">O</div><div class="nf-letter">M</div>
+  <div class="nf-letter">I</div><div class="nf-letter">S</div><div class="nf-letter">A</div>
+</div>
+
+<div id="screen-game" class="screen">
+  <div id="game-ui">
+    <h2 style="color:#00b4d8; margin-bottom:5px;">Feed the Love! ❤️</h2>
+    <p style="color:#aaa; font-size:14px;">Swipe to eat 5 hearts</p>
+    <canvas id="snake-canvas" width="300" height="300"></canvas>
+  </div>
+</div>
+
+<div id="screen-q" class="screen">
+  <div id="q-box">
+    <div class="bots-area">
+      <div class="q-bot" id="q-bot-1">O_o</div>
+      <div class="q-bot" id="q-bot-2">o_O</div>
+    </div>
+    <h2 id="q-text" style="margin-bottom:25px; font-size:22px; line-height:1.4;"></h2>
+    <button class="btn" id="btn-yes" onclick="answerYes()">YES 😍</button>
+    <button class="btn" id="btn-no" onpointerenter="runAway()" onclick="runAway()">NO 😡</button>
+  </div>
+</div>
+
+<div id="screen-diary" class="screen">
+  <div class="book-container"><div class="book" id="diary-book"></div></div>
+</div>
+
+<div id="screen-finale" class="screen">
+  <div id="finale-stage">
+    <div id="love-text">I LOVE YOU ROMISA ❤️</div>
+    
+    <div class="scene-bot" id="main-bot" style="right: -200px; top: 45%;">
+      <div class="speech-bubble" id="bubble-main"></div>
+      <div class="bot-head" id="head-main">^o^</div>
+      <div class="bot-body"></div>
+    </div>
+    
+    <div class="scene-bot" id="clumsy-bot" style="left: 45%; top: -200px;">
+      <div class="speech-bubble" id="bubble-clumsy"></div>
+      <div class="bot-head" id="head-clumsy">x_x</div>
+      <div class="bot-body"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 🌊 ULTRA-REALISTIC WATER ANIMATION
+let turb = document.getElementById('turb'), freq = 0.01;
+setInterval(() => { 
+  freq += 0.0004; 
+  turb.setAttribute('baseFrequency', `0.01 ${0.02 + Math.sin(freq)*0.015}`); 
+}, 40);
+
+// 🎬 SCENE SWITCHER
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+  const screen = document.getElementById(id);
+  screen.style.display = 'flex';
+  gsap.to(screen, {opacity: 1, duration: 1});
+}
+
+// 🎬 NETFLIX INTRO LOGIC
+document.addEventListener('pointerdown', () => { document.getElementById('bg-music').play().catch(()=>{}); }, {once:true});
+
+gsap.to('.nf-letter', {opacity:1, scale:1, filter:"blur(0px)", duration:1.2, stagger:0.2, ease:"power4.out"});
+gsap.to('#intro', {opacity:0, duration:1.5, delay:4, ease:"power2.inOut", onComplete: () => {
+  document.getElementById('intro').style.display='none';
+  showScreen('screen-game');
+  initSnake();
+}});
+  // 🐍 SNAKE GAME ENGINE
+let canvas = document.getElementById('snake-canvas'), ctx = canvas.getContext('2d');
+let snake = [{x:150, y:150}], food = {x:105, y:105}, dx = 15, dy = 0, score = 0, gameLoop;
+
+function drawSnake() {
+  ctx.clearRect(0,0,300,300);
+  // Draw Food
+  ctx.fillStyle = '#ff4d6d'; ctx.font = "22px Arial"; ctx.fillText("❤️", food.x-11, food.y+11);
+  // Draw Snake
+  snake.forEach((p, i) => {
+    ctx.fillStyle = i === 0 ? '#00b4d8' : '#0077b6'; // Head is brighter
+    ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI*2); ctx.fill();
+  });
+  
+  let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+  // Wall Wrapping
+  if(head.x < 0) head.x = 300; if(head.x > 300) head.x = 0;
+  if(head.y < 0) head.y = 300; if(head.y > 300) head.y = 0;
+  snake.unshift(head);
+  
+  // Eat Heart
+  if(Math.abs(head.x - food.x) < 20 && Math.abs(head.y - food.y) < 20) {
+    score++; 
+    food = {x: Math.floor(Math.random()*16)*15+30, y: Math.floor(Math.random()*16)*15+30};
+    if(score >= 5) { 
+      clearInterval(gameLoop); 
+      gsap.to('#screen-game', {opacity: 0, duration: 0.5, onComplete: () => {
+        showScreen('screen-q'); updateQ();
+      }});
+    }
+  } else { snake.pop(); }
+}
+function initSnake() { gameLoop = setInterval(drawSnake, 120); }
+
+// Mobile Swipe Controls (Prevents screen scrolling)
+let touchX, touchY;
+canvas.addEventListener('touchstart', e => { e.preventDefault(); touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, {passive: false});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if(!touchX || !touchY) return;
+  let diffX = touchX - e.touches[0].clientX, diffY = touchY - e.touches[0].clientY;
+  if(Math.abs(diffX) > Math.abs(diffY)) { if(diffX > 0 && dx===0) {dx=-15; dy=0;} else if(diffX < 0 && dx===0) {dx=15; dy=0;} }
+  else { if(diffY > 0 && dy===0) {dx=0; dy=-15;} else if(diffY < 0 && dy===0) {dx=0; dy=15;} }
+  touchX = null; touchY = null;
+}, {passive: false});
+  // ❓ 8 QUESTIONS & RUNAWAY LOGIC
+let qIdx = 0;
+const questions = [
+  "Romisa, are you ready for real magic? ✨", "Do you know you look absolutely beautiful? 🥰", 
+  "Is that a smile on your face? 😊", "Am I the luckiest guy in the world? 🍀",
+  "Are you ready to unlock the secret diary? 📖", "Will you hold my hand forever? 🥺",
+  "Is this realistic water looking cool? 🌊", "Final Question: Do you love me? ❤️"
+];
+
+function updateQ() { 
+  document.getElementById('q-text').innerText = questions[qIdx];
+  // Reset bots to neutral
+  gsap.to('.q-bot', {background: 'linear-gradient(135deg, #0077b6, #023e8a)', y:0, scale:1, duration:0.4});
+  document.getElementById('q-bot-1').innerText = "O_o"; document.getElementById('q-bot-2').innerText = "o_O";
+  // Reset No Button
+  gsap.to('#btn-no', {x: 0, y: 0, duration: 0.3});
+}
+
+function runAway() {
+  const btn = document.getElementById('btn-no');
+  let moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 150 + 50);
+  let moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 100 + 50);
+  gsap.to(btn, {x: moveX, y: moveY, duration: 0.2, ease: "power2.out"});
+}
+
+function answerYes() {
+  // Bots get super happy!
+  gsap.to('.q-bot', {background: 'linear-gradient(135deg, #ff4d6d, #c9184a)', y:-20, scale:1.15, duration:0.4, ease: "back.out(1.7)"});
+  document.getElementById('q-bot-1').innerText = "^_^"; document.getElementById('q-bot-2').innerText = "^_^";
+  
+  qIdx++; 
+  setTimeout(() => { 
+    if(qIdx < questions.length) updateQ(); 
+    else {
+      gsap.to('#screen-q', {opacity: 0, duration: 0.5, onComplete: startDiary});
+    }
+  }, 1000);
+  }
+  // 📖 3D DIARY & REALISTIC PAPER AUDIO
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playPaperSound() {
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0; i<data.length; i++) data[i] = (Math.random()*2-1) * Math.sin(Math.PI * i / data.length) * 0.15;
+  const src = audioCtx.createBufferSource(); src.buffer = buf;
+  const filter = audioCtx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 800;
+  src.connect(filter); filter.connect(audioCtx.destination); src.start();
+}
+
+function startDiary() {
+  showScreen('screen-diary');
+  const book = document.getElementById('diary-book');
+  const pages = [
+    "You are my absolute peace. 🕊️", "Your smile is my favorite view. 🌅", 
+    "Distance is just a small test. 🌍", "And I will pass it every single time. ⏳", 
+    "Every star in the sky belongs to you. ✨", "You are my literal dream come true. 🌙", 
+    "Turn the final page... 📖", "For your grand surprise! 🎁"
+  ];
+  
+  pages.forEach((text, i) => {
+    let page = document.createElement('div'); page.className = 'page'; page.style.zIndex = 10 - i;
+    page.innerHTML = `<p>${text}</p>`;
+    page.onclick = (e) => { 
+      e.stopPropagation(); page.classList.add('flipped'); playPaperSound(); 
+      if(i === 7) setTimeout(() => {
+        gsap.to('#screen-diary', {opacity: 0, duration: 1, onComplete: startComedyFinale});
+      }, 1500); 
+    };
+    book.appendChild(page);
+  });
+  
+  let cover = document.createElement('div'); cover.className = 'page cover'; cover.style.zIndex = 20; 
+  cover.innerHTML = "Romisa's<br>Diary ⚜";
+  cover.onclick = () => { cover.classList.add('flipped'); playPaperSound(); };
+  book.appendChild(cover);
+  }
+  // 🎬 THE ROBOT COMEDY FINALE (PIXAR STYLE TIMELINE)
+function setBot(id, face, text) {
+  document.getElementById(`head-${id}`).innerText = face;
+  if(text) document.getElementById(`bubble-${id}`).innerText = text;
+}
+
+function startComedyFinale() {
+  showScreen('screen-finale');
+  const tl = gsap.timeline();
+  
+  // 1. Main Bot walks in and pushes the text
+  tl.to('#main-bot', {right: '35%', duration: 2.5, ease: "power2.out"})
+    .to('#love-text', {right: '50%', x: '50%', duration: 2.5, ease: "power2.out"}, "<")
+    
+  // 2. Clumsy Bot FALLS from the sky!
+    .to('#clumsy-bot', {top: '45%', duration: 0.8, ease: "bounce.out"}, "+=0.5")
+    .add(() => setBot('clumsy', 'X_X'))
+    
+  // 3. Clumsy Bot speaks
+    .to('#bubble-clumsy', {opacity: 1, y: -10, duration: 0.3})
+    .add(() => setBot('clumsy', 'X_X', "Sorry Romisa I fall accident 🤕"))
+    
+  // 4. Main Bot gets angry
+    .to('#bubble-main', {opacity: 1, y: -10, duration: 0.3}, "+=2")
+    .add(() => {
+        setBot('main', '>_<', "Stupid come here! 😡");
+        document.getElementById('head-main').style.background = "#ff4d6d"; // Turns red with anger
+    })
+    
+  // 5. THE SLAP!
+    .to('#main-bot', {right: '40%', duration: 0.4, ease: "power2.in"}, "+=1.5") // Approaches
+    .to('#main-bot', {rotation: -25, duration: 0.1, yoyo: true, repeat: 1}) // Slap motion
+    .to('#clumsy-bot', {x: -30, rotation: -20, duration: 0.1, yoyo: true, repeat: 1}, "<") // Impact reaction
+    
+  // 6. The Punishment
+    .add(() => setBot('main', '>_<', "Go the corner and sit! 👉"))
+    
+  // 7. Clumsy Bot walks away in shame
+    .to('#bubble-clumsy', {opacity: 0, duration: 0.3}, "+=1.5")
+    .to('#clumsy-bot', {left: '10%', top: '75%', duration: 2, ease: "power1.inOut"}) // Walks to corner
+    .to('#clumsy-bot', {scaleY: 0.5, transformOrigin: "bottom center", duration: 0.5}) // Sits down
+    
+  // 8. Main Bot looks at screen and apologizes
+    .to('#main-bot', {rotation: 0, right: '50%', x: '50%', duration: 1.5, ease: "power2.out"})
+    .to('#bubble-main', {opacity: 0, duration: 0.2}, "<") // Hide old text
+    .add(() => {
+        document.getElementById('head-main').style.background = "#e0e0e0"; // Calms down
+        setBot('main', '^_^', "Romisa, sorry for my friend 😅❤️");
+    })
+    .to('#bubble-main', {opacity: 1, duration: 0.5}); // Show apology
+}
+</script>
+</body>
+</html>
