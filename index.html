@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Romisa's Universe: The 10-Minute Epic 🌊</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  /* === PRO GLOBAL RESET === */
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { 
+    overflow: hidden; background: #000; color: white; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    height: 100vh; width: 100vw; perspective: 1500px; 
+  }
+  
+  /* 🌊 ULTRA-REALISTIC WATER ENGINE */
+  #water-bg { 
+    position: fixed; inset: 0; z-index: -3; 
+    background: linear-gradient(180deg, #001233 0%, #005f73 50%, #0a9396 100%); 
+    filter: url(#water-filter); opacity: 0.95; transform: scale(1.1); 
+  }
+  .water-overlay { 
+    position: fixed; inset: 0; 
+    background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.05) 0%, #000 100%); 
+    z-index: -2; 
+  }
+  #nature-video { 
+    display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; 
+    object-fit: cover; z-index: -4; opacity: 0; 
+  }
+
+  /* 🎬 MASTER SCREEN SYSTEM */
+  .screen { 
+    display: none; position: absolute; inset: 0; 
+    flex-direction: column; align-items: center; justify-content: center; 
+    z-index: 10; opacity: 0; 
+  }
+  .ui-box { 
+    background: rgba(0, 15, 30, 0.88); padding: 30px; border-radius: 30px; 
+    text-align: center; border: 1px solid rgba(10, 147, 150, 0.5); 
+    backdrop-filter: blur(20px); box-shadow: 0 25px 50px rgba(0,0,0,0.9); 
+    width: 90%; max-width: 420px; 
+  }
+  .btn { 
+    padding: 18px 28px; font-size: 18px; border-radius: 50px; border: none; 
+    font-weight: bold; cursor: pointer; margin: 12px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  }
+  .btn-primary { 
+    background: linear-gradient(135deg, #ff4d6d, #c9184a); color: white; 
+    box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4); 
+  }
+  .btn-primary:active { transform: scale(0.92); }
+</style>
+<style>
+  /* 🤖 SEQUENTIAL SPEECH BUBBLES */
+  .speech-bubble { 
+    position: absolute; top: -75px; background: #fff; color: #111; 
+    padding: 12px 18px; border-radius: 20px; font-size: 13px; font-weight: 800; 
+    opacity: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.6); z-index: 100; 
+    max-width: 160px; text-align: center; line-height: 1.4; transform: scale(0.5);
+    border: 2px solid #ddd;
+  }
+  .speech-bubble::after { 
+    content: ''; position: absolute; bottom: -12px; left: 50%; 
+    transform: translateX(-50%); border-width: 12px 12px 0; 
+    border-style: solid; border-color: #fff transparent transparent transparent; 
+  }
+
+  /* 🔥 ROBOT THRUSTERS */
+  .thruster { 
+    width: 28px; height: 50px; 
+    background: linear-gradient(to bottom, #fff, #ffdd00, #ff3300, transparent); 
+    border-radius: 50% 50% 20% 20%; position: absolute; bottom: -40px; left: 36px; 
+    animation: flicker 0.1s infinite alternate; display: none; filter: blur(3px); 
+    box-shadow: 0 0 30px #ff3300;
+  }
+  @keyframes flicker { 0% { opacity: 0.7; transform: scaleX(0.85); } 100% { opacity: 1; transform: scaleX(1.15); } }
+
+  /* 🦾 REALISTIC ROBOT CONTAINERS */
+  .scene-bot { position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 50; width: 100px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+  
+  /* 🔐 PASSWORD & INTRO */
+  #security-input { 
+    width: 85%; padding: 18px; font-size: 22px; text-align: center; border-radius: 15px; 
+    border: 2px solid #0a9396; background: #000; color: #0a9396; margin: 25px 0; 
+    outline: none; letter-spacing: 6px; font-weight: bold;
+  }
+  #intro { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #000; }
+  .nf-letter { 
+    font-size: 16vw; font-weight: 900; color: #e50914; opacity: 0; 
+    transform: scale(3); filter: blur(15px); text-shadow: 0 0 50px rgba(229,9,20,1); 
+  }
+</style>
+<style>
+  /* 🐍 SNAKE ENGINE */
+  #snake-canvas { 
+    background: #010a15; border-radius: 15px; margin-top: 20px; 
+    box-shadow: inset 0 0 30px rgba(0, 180, 216, 0.4), 0 0 20px rgba(0,0,0,0.5); 
+    touch-action: none; border: 1px solid #00b4d8;
+  }
+
+  /* 🦘 TRAMPOLINE AREA */
+  #tramp-area { 
+    width: 100%; height: 320px; position: relative; overflow: hidden; 
+    background: rgba(0,0,0,0.6); border-radius: 20px; border: 2px dashed #0a9396; 
+    margin-top:20px; 
+  }
+  #paddle { 
+    width: 110px; height: 22px; background: linear-gradient(90deg, #ff4d6d, #c9184a); 
+    border-radius: 12px; position: absolute; bottom: 15px; left: 100px; 
+    box-shadow: 0 0 20px #ff4d6d; 
+  }
+  #falling-bot { width: 45px; height: 45px; position: absolute; top: 0; left: 130px; font-size: 35px; }
+
+  /* 📶 ROUTER REPAIR */
+  .router-box { position: relative; height: 160px; width: 100%; overflow: hidden; margin-top: 25px; }
+  .realistic-router { position: absolute; left: 50%; transform: translateX(-50%); top: 50px; }
+  .router-light { width: 8px; height: 8px; border-radius: 50%; position: absolute; right: 20px; top: 42px; background: red; box-shadow: 0 0 10px red; }
+
+  /* 📖 3D DIARY */
+  .book-container { perspective: 3000px; margin-top: 20px; }
+  .book { width: 310px; height: 440px; position: relative; transform-style: preserve-3d; transform: rotateX(12deg) rotateY(-8deg); }
+  .page { 
+    position: absolute; width: 100%; height: 100%; top: 0; right: 0; 
+    background: #fffcf2; transform-origin: left; transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1); 
+    border-radius: 5px 15px 15px 5px; padding: 40px 30px; font-size: 19px; 
+    color: #2c1e1e; font-style: italic; border: 1px solid #d4d4d4; 
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    box-shadow: inset 10px 0 20px rgba(0,0,0,0.05);
+  }
+  .page.flipped { transform: rotateY(-180deg); }
+  .cover { background: linear-gradient(135deg, #4a001f, #800040); color: #fcc419; font-weight: 900; font-size: 34px; border-left: 20px solid #2a0012; }
+</style>
+<style>
+  /* 📖 EMOTIONAL PHOTO STORY */
+  #story-overlay { 
+    position: absolute; inset: 0; z-index: 500; display: none; 
+    align-items: center; justify-content: center; background-size: cover; 
+    background-position: center; transition: 2.5s ease-in-out; 
+  }
+  #story-overlay::before { 
+    content: ''; position: absolute; inset: 0; 
+    background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%); 
+    backdrop-filter: blur(3px); 
+  }
+  #story-text { 
+    width: 82%; text-align: center; font-size: 24px; line-height: 1.7; 
+    color: #fff; text-shadow: 0 4px 15px #000; z-index: 510; opacity: 0; 
+    font-weight: 500; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+  }
+
+  /* 🎬 MASSIVE 3D ROMISA TEXT */
+  #love-text { 
+    position: absolute; top: 22%; width: 100%; text-align: center; 
+    font-size: clamp(38px, 9vw, 60px); color: #ff4d6d; font-weight: 900; 
+    text-shadow: 0 1px 0 #c9184a, 0 2px 0 #c9184a, 0 3px 0 #a0133b, 0 4px 0 #800f2f, 0 10px 25px rgba(0,0,0,0.8); 
+    right: -250vw; transform: translateZ(50px);
+  }
+
+  /* 🏮 CREDITS */
+  #screen-credits { background: transparent; overflow: hidden; }
+  .lantern { 
+    position: absolute; bottom: -100px; width: 45px; height: 65px; 
+    background: rgba(255, 170, 0, 0.9); border-radius: 12px; 
+    box-shadow: 0 0 35px gold, inset 0 -10px 15px rgba(255,0,0,0.5); 
+    animation: floatL 28s linear forwards; z-index: 1;
+  }
+  @keyframes floatL { 
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; } 
+  }
+  #credits-text { 
+    position: absolute; top: 105%; width: 100%; text-align: center; 
+    color: #fcc419; font-size: 24px; line-height: 3; text-shadow: 0 0 20px gold; 
+    white-space: pre-line; z-index: 10; font-weight: bold; 
+  }
+  .credits-scroll { animation: scrollUp 55s linear forwards; }
+  @keyframes scrollUp { to { top: -300%; } }
+</style>
+</head>
+<body>
+<svg style="display:none;"><filter id="water-filter"><feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="3" id="turb"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<div id="water-bg"></div><div class="water-overlay"></div>
+<video id="nature-video" src="https://cdn.pixabay.com/video/2020/05/14/38894-420790924_large.mp4" loop muted playsinline></video>
+<audio id="bg-music" src="love.mp3" loop></audio>
+<audio id="piano-music" src="piano.mp3" loop></audio>
+
+<div id="screen-password" class="screen" style="display:flex; opacity:1;">
+  <div class="ui-box">
+    <h2 style="color:#0a9396; font-family:monospace; letter-spacing:2px;">ENCRYPTED SYSTEM</h2>
+    <input type="text" id="security-input" placeholder="CODE">
+    <button class="btn btn-primary" onclick="checkPassword()">INITIALIZE</button>
+    <p id="pass-error" style="color:#ff4d6d; margin-top:10px; display:none; font-weight:bold;">INVALID AUTHORIZATION 🚨</p>
+  </div>
+</div>
+
+<div id="intro" style="display:none;">
+  <div class="nf-letter">R</div><div class="nf-letter">O</div><div class="nf-letter">M</div>
+  <div class="nf-letter">I</div><div class="nf-letter">S</div><div class="nf-letter">A</div>
+</div>
+
+<div id="screen-snake" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#0a9396; text-shadow:0 0 10px #0a9396;">VALENTINE PROTOCOL</h2>
+    <p style="color:#aaa; font-size:14px; margin-top:5px;">Feed 5 Hearts to the Logic Engine</p>
+    <canvas id="snake-canvas" width="300" height="300"></canvas>
+  </div>
+</div>
+
+<div id="screen-tramp" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#ff4d6d;">CRITICAL ERROR!</h2>
+    <p style="color:#aaa; font-size:13px; margin-bottom:10px;">Clumsy Bot is falling! Catch him 10 times!</p>
+    <h3 id="bounce-score" style="color:#fff; text-shadow:0 0 10px #ff4d6d;">BOUNCES: 0/10</h3>
+    <div id="tramp-area"><div id="falling-bot">🤖</div><div id="paddle"></div></div>
+  </div>
+      </div>
+      <div id="screen-lie" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#e9d8a6;">TRUTH SCANNER</h2>
+    <div style="display:flex; justify-content:center; gap:25px; margin:20px 0;">
+      <svg viewBox="0 0 100 130" width="65" height="85"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#00b4d8"/></linearGradient></defs><rect x="25" y="20" width="50" height="40" rx="10" fill="url(#g1)" stroke="#fff" stroke-width="2"/><text id="lie-face-1" x="50" y="45" fill="#000" font-size="16" text-anchor="middle" font-weight="bold">O_O</text><rect x="25" y="65" width="50" height="45" rx="5" fill="#023e8a"/></svg>
+      <svg viewBox="0 0 100 130" width="65" height="85"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#ff4d6d"/></linearGradient></defs><rect x="25" y="20" width="50" height="40" rx="10" fill="url(#g2)" stroke="#fff" stroke-width="2"/><text id="lie-face-2" x="50" y="45" fill="#000" font-size="16" text-anchor="middle" font-weight="bold">O_O</text><rect x="25" y="65" width="50" height="45" rx="5" fill="#c9184a"/></svg>
+    </div>
+    <h3 id="lie-question" style="font-size:18px;">Who is the real boss here?</h3>
+    <button class="btn btn-primary" onclick="lieAnswer('Raj')">RAJ 😎</button>
+    <button class="btn btn-primary" onclick="lieAnswer('Romisa')">ROMISA 👑</button>
+  </div>
+</div>
+
+<div id="screen-glitch" class="screen">
+  <div class="ui-box">
+    <h2 style="color:#ff4d6d; text-shadow:0 0 15px red;">CONNECTION UNSTABLE</h2>
+    <div class="router-box">
+      <div class="realistic-router">
+        <svg viewBox="0 0 100 60" width="120" height="70"><rect x="10" y="30" width="80" height="25" rx="5" fill="#222" stroke="#444" stroke-width="2"/><rect x="20" y="5" width="4" height="25" fill="#333"/><rect x="76" y="5" width="4" height="25" fill="#333"/><circle id="r-light" cx="80" cy="42" r="4" fill="red" /></svg>
+      </div>
+      <div id="glitch-bot-seq" style="position:absolute; left:-100px; top:10px; font-size:45px;">🤖🔨</div>
+    </div>
+    <p id="glitch-text" style="font-weight:bold; margin-top:10px;">Attempting Signal Restoration...</p>
+  </div>
+</div>
+
+<div id="screen-gallery" class="screen"><div class="ui-box" style="background:transparent; border:none; box-shadow:none;"><div class="polaroid-container" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;" id="gallery-grid"></div></div></div>
+<div id="screen-diary" class="screen"><div class="book-container"><div class="book" id="diary-book"></div></div></div>
+
+<div id="screen-finale" class="screen">
+  <div id="finale-stage">
+    <div id="love-text">I LOVE YOU<br>ROMISA ❤️</div>
+    
+    <div class="scene-bot" id="main-bot" style="right:-200px; top:45%;"><div class="speech-bubble" id="bubble-main"></div><svg viewBox="0 0 100 130" width="100"><defs><linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff"/><stop offset="50%" stop-color="#888"/><stop offset="100%" stop-color="#444"/></linearGradient></defs><rect x="25" y="20" width="50" height="40" rx="10" fill="url(#metal)" stroke="#fff"/><text id="face-main" x="50" y="42" fill="#0a9396" font-size="14" font-weight="bold" text-anchor="middle">^_^</text><rect x="30" y="65" width="40" height="50" rx="10" fill="url(#metal)"/></svg><div class="thruster" id="main-fire"></div></div>
+    
+    <div class="scene-bot" id="clumsy-bot" style="left:45%; top:-200px;"><div class="speech-bubble" id="bubble-clumsy"></div><svg id="svg-clumsy" viewBox="0 0 100 130" width="100"><defs><linearGradient id="gold-metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffb703"/><stop offset="100%" stop-color="#fb8500"/></linearGradient></defs><rect x="25" y="20" width="50" height="40" rx="10" fill="url(#gold-metal)" stroke="#fff"/><text id="face-clumsy" x="50" y="42" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">x_x</text><rect x="25" y="65" width="50" height="45" rx="5" fill="url(#gold-metal)"/></svg></div>
+    
+    <div class="scene-bot" id="raj-bot" style="right:50%; top:-300px;"><div class="speech-bubble" id="bubble-raj"></div><svg viewBox="0 0 100 130" width="100"><defs><linearGradient id="blue-metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00b4d8"/><stop offset="100%" stop-color="#03045e"/></linearGradient></defs><rect x="25" y="20" width="50" height="40" rx="10" fill="url(#blue-metal)" stroke="#fff"/><text id="face-raj" x="50" y="42" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">O_O</text><rect x="25" y="65" width="50" height="45" rx="5" fill="url(#blue-metal)"/></svg></div>
+  </div>
+  </div>
+ <script>
+// === MASTER AUDIO & STATE ===
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSFX(f, d, t='sine', v=0.3) {
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  let o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = t; o.connect(g); g.connect(audioCtx.destination);
+  o.frequency.setValueAtTime(f, audioCtx.currentTime);
+  g.gain.setValueAtTime(v, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+  o.start(); o.stop(audioCtx.currentTime + d);
+}
+
+// === WATER ANIMATION ===
+let turb = document.getElementById('turb'), fVal = 0.01;
+setInterval(() => { fVal += 0.0003; turb.setAttribute('baseFrequency', `0.01 ${0.02 + Math.sin(fVal)*0.01}`); }, 45);
+
+// === SCREEN NAVIGATION ===
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; s.style.opacity = '0'; });
+  const target = document.getElementById(id);
+  target.style.display = 'flex';
+  gsap.to(target, { opacity: 1, duration: 1.2, ease: "power2.out" });
+}
+
+// === 🔐 PASSWORD LOGIC ===
+function checkPassword() {
+  const input = document.getElementById('security-input').value.toLowerCase();
+  if(input === 'romisa') {
+    document.getElementById('bg-music').play().catch(()=>{});
+    gsap.to('#screen-password', { opacity: 0, duration: 0.8, onComplete: () => {
+      document.getElementById('screen-password').style.display = 'none';
+      startNetflixIntro();
+    }});
+  } else {
+    document.getElementById('pass-error').style.display = 'block';
+    gsap.fromTo('.ui-box', {x: -10}, {x: 10, duration: 0.1, repeat: 4, yoyo: true});
+  }
+}
+
+// === 🎬 NETFLIX INTRO FLOW ===
+function startNetflixIntro() {
+  document.getElementById('intro').style.display = 'flex';
+  playSFX(100, 2, 'sawtooth', 0.1); // Intro Sound Simulation
+  gsap.to('.nf-letter', { 
+    opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.5, stagger: 0.2, ease: "power4.out",
+    onComplete: () => {
+      gsap.to('#intro', { 
+        opacity: 0, duration: 1.5, delay: 2, 
+        onComplete: () => {
+          document.getElementById('intro').style.display = 'none';
+          showScreen('screen-snake'); // FIXED: Correctly moves to next page
+          initSnake();
+        }
+      });
+    }
+  });
+}
+ </script>
+  <script>
+// === 🐍 SNAKE GAME ===
+let sLoop; 
+function initSnake() {
+  const c = document.getElementById('snake-canvas'), ctx = c.getContext('2d');
+  let snake = [{x:150, y:150}], food = {x:105, y:105}, dx = 15, dy = 0, score = 0;
+  
+  sLoop = setInterval(() => {
+    ctx.clearRect(0,0,300,300);
+    // Draw Heart Food
+    ctx.fillStyle = '#ff4d6d'; ctx.font = "22px Arial"; ctx.fillText("❤️", food.x-11, food.y+11);
+    // Draw Snake
+    snake.forEach((p, i) => {
+      ctx.fillStyle = i === 0 ? '#00b4d8' : '#0077b6';
+      ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, 7); ctx.fill();
+    });
+    
+    let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+    if(head.x < 0) head.x = 300; if(head.x > 300) head.x = 0;
+    if(head.y < 0) head.y = 300; if(head.y > 300) head.y = 0;
+    snake.unshift(head);
+
+    if(Math.abs(head.x - food.x) < 20 && Math.abs(head.y - food.y) < 20) {
+      score++; playSFX(600, 0.1, 'sine', 0.2);
+      food = { x: Math.random()*240 + 30, y: Math.random()*240 + 30 };
+      if(score >= 5) { clearInterval(sLoop); setTimeout(() => { showScreen('screen-tramp'); initTramp(); }, 1000); }
+    } else { snake.pop(); }
+  }, 130);
+
+  // Responsive Swipe
+  let tx, ty;
+  c.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive: false});
+  c.addEventListener('touchmove', e => {
+    e.preventDefault(); if(!tx || !ty) return;
+    let xDiff = tx - e.touches[0].clientX, yDiff = ty - e.touches[0].clientY;
+    if(Math.abs(xDiff) > Math.abs(yDiff)) { dx = xDiff > 0 ? -15 : 15; dy = 0; }
+    else { dy = yDiff > 0 ? -15 : 15; dx = 0; }
+    tx = null; ty = null;
+  }, {passive: false});
+}
+
+// === 🦘 TRAMPOLINE GAME ===
+let tLoop, padX = 100;
+function initTramp() {
+  const bot = document.getElementById('falling-bot'), paddle = document.getElementById('paddle');
+  let bx = 130, by = 0, bdx = 4, bdy = 5, score = 0;
+  
+  tLoop = setInterval(() => {
+    bx += bdx; by += bdy;
+    if(bx <= 0 || bx >= 260) bdx *= -1;
+    if(by <= 0) { by = 0; bdy = Math.abs(bdy); playSFX(300, 0.1); }
+    
+    // Paddle Hit Logic
+    if(by >= 255 && by <= 275 && bx >= padX - 40 && bx <= padX + 110) {
+      bdy = -Math.abs(bdy) - 0.6; score++;
+      document.getElementById('bounce-score').innerText = `BOUNCES: ${score}/10`;
+      playSFX(400, 0.2, 'square');
+    }
+    
+    if(by > 320) { by = 0; bdy = 5; score = 0; document.getElementById('bounce-score').innerText = `BOUNCES: 0/10`; playSFX(100, 0.5); }
+    if(score >= 10) { clearInterval(tLoop); setTimeout(() => { showScreen('screen-lie'); }, 1000); }
+    
+    bot.style.left = bx + 'px'; bot.style.top = by + 'px';
+  }, 25);
+  
+  document.getElementById('tramp-area').addEventListener('touchmove', e => {
+    e.preventDefault();
+    let rect = document.getElementById('tramp-area').getBoundingClientRect();
+    padX = e.touches[0].clientX - rect.left - 55;
+    if(padX < 0) padX = 0; if(padX > 210) padX = 210;
+    paddle.style.left = padX + 'px';
+  }, {passive: false});
+}
+  </script>
+ <script>
+// === 🕵️‍♂️ LIE DETECTOR ===
+let lieStep = 0;
+function lieAnswer(ans) {
+  const q = document.getElementById('lie-question'), f1 = document.getElementById('lie-face-1'), f2 = document.getElementById('lie-face-2');
+  if(lieStep === 0) {
+    if(ans === 'Raj') { 
+      f1.innerText = ">_<"; f2.innerText = ">_<"; q.innerText = "LIES DETECTED! Try again!"; 
+      playSFX(150, 0.4, 'sawtooth');
+    } else {
+      f1.innerText = "^_^"; f2.innerText = "^_^"; q.innerText = "TRUTH! We bow to the Queen!"; 
+      lieStep = 1; playSFX(500, 0.3);
+      setTimeout(() => { q.innerText = "Who loves who more?"; f1.innerText = "O_O"; f2.innerText = "O_O"; }, 2000);
+    }
+  } else {
+    if(ans === 'Romisa') {
+      q.innerText = "BEEP! Raj's love is too high to measure!"; 
+      playSFX(150, 0.4);
+    } else {
+      q.innerText = "MATCH FOUND! Raj's love is infinite."; 
+      f1.innerText = "❤️"; f2.innerText = "❤️"; playSFX(800, 0.5);
+      setTimeout(() => { showScreen('screen-glitch'); initRepairSkit(); }, 2500);
+    }
+  }
+}
+
+// === 📶 COLLABORATIVE WIFI REPAIR ===
+function initRepairSkit() {
+  const bot = document.getElementById('glitch-bot-seq'), txt = document.getElementById('glitch-text'), light = document.getElementById('r-light');
+  let time = 10;
+  
+  // Animate Bot fixing the router
+  gsap.to(bot, { left: '40%', duration: 1.5, ease: "power2.out" });
+  
+  let repairIv = setInterval(() => {
+    time--; txt.innerText = `Fixing Signal... ${time} Seconds Remaining`;
+    playSFX(200, 0.05, 'square', 0.1);
+    if(time <= 0) {
+      clearInterval(repairIv);
+      light.setAttribute('fill', '#00ff00'); light.style.boxShadow = "0 0 15px #00ff00";
+      txt.innerText = "Signal Restored! Launching Memories...";
+      txt.style.color = "#00ff00";
+      gsap.to(bot, { left: '120%', duration: 1, delay: 1, onComplete: initGallery });
+    }
+  }, 1000);
+}
+ </script>
+ <script>
+// === 📸 POLAROID GALLERY ===
+function initGallery() {
+  showScreen('screen-gallery');
+  const grid = document.getElementById('gallery-grid');
+  const icons = ["💖", "✨", "👑", "🌙", "🌹", "💎"];
+  
+  icons.forEach((ic, i) => {
+    let p = document.createElement('div');
+    p.style.width = "90px"; p.style.height = "110px"; p.style.background = "#fff";
+    p.style.borderRadius = "8px"; p.style.display = "flex"; p.style.alignItems = "center";
+    p.style.justifyContent = "center"; p.style.fontSize = "30px"; p.style.boxShadow = "0 10px 20px rgba(0,0,0,0.5)";
+    p.innerText = "Tap"; p.style.cursor = "pointer"; p.style.color = "#333";
+    
+    p.onclick = () => {
+      if(p.innerText === "Tap") {
+        p.innerText = ic; p.classList.add('rev'); playSFX(600 + (i*50), 0.2);
+        gsap.from(p, { scale: 1.2, duration: 0.3 });
+        if(document.querySelectorAll('.rev').length === 6) setTimeout(initDiary, 1200);
+      }
+    };
+    grid.appendChild(p);
+    gsap.from(p, { y: 50, opacity: 0, duration: 0.5, delay: i*0.1 });
+  });
+}
+
+// === 📖 3D DIARY ===
+function initDiary() {
+  showScreen('screen-diary');
+  const book = document.getElementById('diary-book');
+  const storyTxt = [
+    "Romisa...", "You are the best part of my day.", "Every second with you is magic.", 
+    "I wish I could hold your hand now.", "You are my peace and my joy.", 
+    "Distance can't stop my heart.", "Turn the last page...", "For the surprise! 🎁"
+  ];
+  
+  storyTxt.forEach((t, i) => {
+    let p = document.createElement('div'); p.className = 'page'; p.style.zIndex = 10 - i;
+    p.innerHTML = `<p>${t}</p>`;
+    p.onclick = (e) => { 
+      e.stopPropagation(); p.classList.add('flipped'); playSFX(400, 0.3, 'sine', 0.1); 
+      if(i === 7) setTimeout(startGrandFinale, 1500);
+    };
+    book.appendChild(p);
+  });
+  
+  let cover = document.createElement('div'); cover.className = 'page cover'; cover.style.zIndex = 20; 
+  cover.innerHTML = "FOR<br>ROMISA ⚜";
+  cover.onclick = () => { cover.classList.add('flipped'); playSFX(300, 0.4); };
+  book.appendChild(cover);
+}
+ </script>
+  <script>
+// === SEQUENTIAL BOT CONTROL ===
+function talk(botId, text, dur = 3) {
+  return new Promise(resolve => {
+    const bubble = document.getElementById(`bubble-${botId}`);
+    bubble.innerText = text;
+    gsap.to(bubble, { opacity: 1, scale: 1, y: -10, duration: 0.4 });
+    setTimeout(() => {
+      gsap.to(bubble, { opacity: 0, scale: 0.5, y: 0, duration: 0.4, onComplete: resolve });
+    }, dur * 1000);
+  });
+}
+
+async function startGrandFinale() {
+  showScreen('screen-finale');
+  const tl = gsap.timeline();
+  
+  // 1. Massive Text Slides in
+  tl.to('#love-text', { right: '0vw', duration: 3, ease: "power3.out" })
+    .to('#main-bot', { right: '35%', duration: 2, ease: "power2.out" }, "-=1");
+
+  // 2. Clumsy Bot Falls (With Thud)
+  tl.to('#clumsy-bot', { top: '40%', duration: 0.8, ease: "bounce.out" }, "+=0.5")
+    .add(() => playSFX(120, 0.6, 'sine', 0.5));
+
+  // 3. SEQUENTIAL TALKING (One after another)
+  await talk('clumsy', "Ouch! Sorry Romisa I fall accident 🤕", 3);
+  
+  // Main bot gets angry
+  document.getElementById('face-main').textContent = ">_<";
+  document.getElementById('face-main').setAttribute('fill', 'red');
+  await talk('main', "STUPID!! Come here right now! 😡", 2.5);
+
+  // 4. THE SLAP
+  gsap.to('#main-bot', { right: '42%', duration: 0.4, ease: "power2.in", onComplete: () => {
+    playSFX(800, 0.1, 'square', 0.4); // Slap Sound
+    gsap.to('#main-bot', { rotation: -25, duration: 0.1, yoyo: true, repeat: 1 });
+    gsap.to('#clumsy-bot', { x: -45, rotation: -20, duration: 0.1, yoyo: true, repeat: 1 });
+  }});
+
+  await new Promise(r => setTimeout(r, 1000));
+  await talk('main', "Go sit in the corner and think about what you did! 👉", 3);
+
+  // Clumsy walks away sadly
+  gsap.to('#clumsy-bot', { left: '5%', top: '75%', scale: 0.7, duration: 2.5, ease: "power1.inOut" });
+  await new Promise(r => setTimeout(r, 2500));
+
+  // Main bot apologizes
+  document.getElementById('face-main').textContent = "^_^";
+  document.getElementById('face-main').setAttribute('fill', '#0a9396');
+  await talk('main', "Romisa, sorry for my friend. He is a bit glitchy... 😅❤️", 3);
+  await talk('main', "I have something better to show you. Wait here! ☝️", 3);
+
+  // 5. 5-SECOND ROCKET FLIGHT (With Fire)
+  document.getElementById('main-fire').style.display = 'block';
+  playSFX(60, 5, 'sawtooth', 0.2); // Rocket sound
+  gsap.to('#main-bot', { top: '-400px', duration: 5, ease: "power2.in" });
+
+  // 6. Return with Raj Bot
+  setTimeout(() => {
+    playSFX(60, 5, 'sawtooth', 0.2);
+    document.getElementById('main-fire').style.display = 'block';
+    gsap.to('#main-bot', { top: '40%', right: '35%', duration: 5, ease: "power2.out" });
+    gsap.to('#raj-bot', { top: '45%', right: '55%', duration: 5, ease: "power2.out", onComplete: async () => {
+      document.getElementById('main-fire').style.display = 'none';
+      
+      await talk('main', "Raj, talk to Romisa. 🎤", 2);
+      
+      // Raj Bot BLUSHES
+      document.getElementById('face-raj').textContent = ">///<";
+      document.getElementById('face-raj').setAttribute('fill', '#ff4da6');
+      gsap.to('#raj-bot', { x: 5, duration: 0.1, yoyo: true, repeat: 10 });
+      
+      await talk('raj', "Ro-ro-romisa... 😳 I hope you love this...", 4);
+      await talk('raj', "I built this entire world for you. ❤️", 3);
+      
+      startPhotoStory();
+    }});
+  }, 2000);
+}
+  </script>
+  <script>
+// === 🎹 65-PAGE EMOTIONAL STORY ===
+const story = [
+  "Before you, my world was just quiet colors...", "Then you arrived like a beautiful sunrise.",
+  "Your smile became my favorite reason to wake up.", "Every kilometer between us is just a number.",
+  "Because my heart is always right where you are.", "I admire your strength and your kind soul.",
+  "You make me want to be better every single day.", "Thank you for being my peace.",
+  "Thank you for being my home.", "I built this universe so you'd never feel alone.",
+  "No matter how far, I am always by your side.", "Romisa, you are my literal dream come true.",
+  "I love you more than words can ever say. ❤️", "Enjoy this beautiful view I made for you..."
+  // Raj: You can add all 65 sentences here!
+];
+
+const vibes = [
+  "https://images.unsplash.com/photo-1464802686167-b939a67a06a1",
+  "https://images.unsplash.com/photo-1501854140801-50d01698950b",
+  "https://images.unsplash.com/photo-1475113548554-5a36f1f523d6"
+];
+
+function startPhotoStory() {
+  const overlay = document.getElementById('story-overlay');
+  const text = document.getElementById('story-text');
+  overlay.style.display = 'flex';
+  
+  // Start Soft Piano
+  const piano = document.getElementById('piano-music');
+  piano.volume = 0.5; piano.play();
+
+  let idx = 0;
+  function next() {
+    if(idx < story.length) {
+      overlay.style.backgroundImage = `url('${vibes[idx % vibes.length]}?auto=format&fit=crop&w=1000')`;
+      gsap.to(text, { opacity: 0, duration: 1, onComplete: () => {
+        text.innerText = story[idx];
+        gsap.to(text, { opacity: 1, duration: 1.5 });
+        idx++;
+        setTimeout(next, 7000); // EXACTLY 7 SECONDS
+      }});
+    } else {
+      gsap.to(overlay, { opacity: 0, duration: 2, onComplete: endShow });
+    }
+  }
+  next();
+}
+
+function endShow() {
+  showScreen('screen-credits');
+  const vid = document.getElementById('nature-video');
+  vid.style.display = 'block'; vid.play();
+  gsap.to(vid, { opacity: 1, duration: 4 });
+  gsap.to('#water-bg', { opacity: 0, duration: 4 });
+
+  const credits = document.getElementById('credits-text');
+  credits.classList.add('credits-scroll');
+  credits.innerText = "ROMISA'S UNIVERSE\n\nA Digital Masterpiece\n\nLead Developer: RAJ 😎\n\nSound Design: RAJ\n\nMusic: love.mp3 / piano.mp3\n\nBuilt with 100% Love\n\nI LOVE YOU FOREVER ❤️";
+
+  // Spawn Sky Lanterns
+  setInterval(() => {
+    let l = document.createElement('div'); l.className = 'lantern';
+    l.style.left = Math.random() * 90 + 'vw';
+    document.body.appendChild(l);
+    setTimeout(() => l.remove(), 30000);
+  }, 1500);
+}
+</script>
+</body>
+</html>
